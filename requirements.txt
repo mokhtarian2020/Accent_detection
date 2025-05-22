@@ -1,5 +1,7 @@
 streamlit
-torch==2.2.2
-speechbrain==0.5.15
+torch
+torchaudio
 yt-dlp
-ffmpeg-python
+librosa
+soundfile  # required by librosa for .wav
+speechbrain
