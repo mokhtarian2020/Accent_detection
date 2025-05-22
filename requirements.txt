@@ -1,7 +1,7 @@
 streamlit
 torch
 torchaudio
-yt-dlp
-librosa
-soundfile  # required by librosa for .wav
+yt_dlp
 speechbrain
+ffmpeg-python
+librosa
