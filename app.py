@@ -3,15 +3,15 @@ import os
 import shutil
 import yt_dlp
 import torch
+import librosa
+import numpy as np
 from speechbrain.inference.classifiers import EncoderClassifier
 
-# === Configuration ===
 DEBUG = True
 TEMP_AUDIO = "temp_audio.wav"
 SOURCE_DIR = "./accent-id-commonaccent_ecapa"
 TARGET_DIR = "pretrained_models/accent-id-commonaccent_ecapa"
 
-# === Human-readable accent labels ===
 LABEL_MAP = {
     "us": "American",
     "england": "British",
@@ -31,7 +31,6 @@ LABEL_MAP = {
     "southatlandtic": "South Atlantic"
 }
 
-# === Download audio from YouTube ===
 def download_audio(url):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -47,13 +46,11 @@ def download_audio(url):
         ydl.download([url])
     return TEMP_AUDIO
 
-# === Prepare and load model ===
 def setup_model():
     os.makedirs(TARGET_DIR, exist_ok=True)
-    required_files = ["hyperparams.yaml", "model.ckpt", "label_encoder.txt", "valid.csv"]
-    for filename in required_files:
-        src = os.path.join(SOURCE_DIR, filename)
-        dst = os.path.join(TARGET_DIR, filename)
+    for fname in ["hyperparams.yaml", "model.ckpt", "label_encoder.txt", "valid.csv"]:
+        src = os.path.join(SOURCE_DIR, fname)
+        dst = os.path.join(TARGET_DIR, fname)
         if not os.path.exists(dst):
             shutil.copyfile(src, dst)
 
@@ -61,18 +58,16 @@ def setup_model():
     classifier = EncoderClassifier.from_hparams(source=TARGET_DIR, run_opts={"device": device})
     return classifier, device
 
-# === Classify accent ===
-def classify_accent(audio_path, classifier):
-    out_prob, score, index, text_lab = classifier.classify_file(audio_path)
+def classify_accent(audio_path, classifier, device):
+    audio, sr = librosa.load(audio_path, sr=16000, mono=True)
+    signal = torch.tensor(audio).unsqueeze(0).to(device)
+    out_prob, score, index, text_lab = classifier.classify_batch(signal)
     return text_lab[0], float(score[0])
 
 # === Streamlit UI ===
 st.set_page_config(page_title="English Accent Classifier", page_icon="🎙️")
 st.title("🎙️ English Accent Classifier (Demo)")
-st.markdown("""
-This demo identifies the **English accent** of a speaker from a YouTube video.
-Paste a link to a video with clear English speech.
-""")
+st.markdown("This demo identifies the **English accent** of a speaker from a YouTube video. Paste a link with clear English speech.")
 
 url = st.text_input("🔗 Enter YouTube URL:")
 if st.button("Analyze"):
@@ -83,14 +78,14 @@ if st.button("Analyze"):
             try:
                 audio_path = download_audio(url)
                 classifier, device = setup_model()
-                accent_raw, confidence = classify_accent(audio_path, classifier)
+                accent_raw, confidence = classify_accent(audio_path, classifier, device)
                 friendly_accent = LABEL_MAP.get(accent_raw, accent_raw)
 
                 st.success("✅ Accent classification complete!")
                 st.markdown(f"**Accent:** {friendly_accent}")
                 st.markdown(f"**Confidence:** {confidence * 100:.1f}%")
-                st.markdown(f"**Summary:** The model predicts the speaker most likely has a **{friendly_accent}** accent "
-                            f"with **{confidence * 100:.1f}%** confidence.")
+                st.markdown(f"**Summary:** The speaker in the video most likely has a **{friendly_accent}** English accent "
+                            f"with a confidence score of **{confidence * 100:.1f}%**.")
 
             except Exception as e:
                 st.error(f"❌ Error: {str(e)}")
