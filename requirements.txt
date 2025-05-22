@@ -1,6 +1,5 @@
 streamlit
 torch==2.2.2
-torchaudio==2.2.2
 speechbrain==0.5.15
 yt-dlp
 ffmpeg-python
