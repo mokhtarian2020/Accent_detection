@@ -1,0 +1,18 @@
+'england' => 0
+'us' => 1
+'canada' => 2
+'australia' => 3
+'indian' => 4
+'scotland' => 5
+'ireland' => 6
+'african' => 7
+'malaysia' => 8
+'newzealand' => 9
+'southatlandtic' => 10
+'bermuda' => 11
+'philippines' => 12
+'hongkong' => 13
+'wales' => 14
+'singapore' => 15
+================
+'starting_index' => 0

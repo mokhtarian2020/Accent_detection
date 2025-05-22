@@ -1,0 +1,55 @@
+# ############################################################################
+# Model: ECAPA-TDNN for Accent Identification
+# ############################################################################
+
+# Pretrain folder (HuggingFace)
+pretrained_path: Jzuluaga/accent-id-commonaccent_ecapa
+
+# Feature parameters
+n_mels: 80
+
+# Output parameters
+n_languages: 16 # Possible languages in the dataset
+emb_dim: 192 # dimensionality of the embeddings
+
+# Model params
+compute_features: !new:speechbrain.lobes.features.Fbank
+    n_mels: !ref <n_mels>
+
+mean_var_norm: !new:speechbrain.processing.features.InputNormalization
+    norm_type: sentence
+    std_norm: False
+
+# Embedding Model
+embedding_model: !new:speechbrain.lobes.models.ECAPA_TDNN.ECAPA_TDNN
+    input_size: !ref <n_mels>
+    activation: !name:torch.nn.LeakyReLU
+    channels: [1024, 1024, 1024, 1024, 3072]
+    kernel_sizes: [5, 3, 3, 3, 1]
+    dilations: [1, 2, 3, 4, 1]
+    attention_channels: 128
+    lin_neurons: !ref <emb_dim>
+
+# Classifier based on cosine distance
+classifier: !new:speechbrain.lobes.models.ECAPA_TDNN.Classifier
+    input_size: !ref <emb_dim>
+    out_neurons: !ref <n_languages>
+
+modules:
+    compute_features: !ref <compute_features>
+    mean_var_norm: !ref <mean_var_norm>
+    embedding_model: !ref <embedding_model>
+    classifier: !ref <classifier>
+
+label_encoder: !new:speechbrain.dataio.encoder.CategoricalEncoder
+
+pretrainer: !new:speechbrain.utils.parameter_transfer.Pretrainer
+    loadables:
+        embedding_model: !ref <embedding_model>
+        classifier: !ref <classifier>
+        label_encoder: !ref <label_encoder>
+    paths:
+        embedding_model: !ref <pretrained_path>/embedding_model.ckpt
+        classifier: !ref <pretrained_path>/classifier.ckpt
+        label_encoder: !ref <pretrained_path>/accent_encoder.txt
+
