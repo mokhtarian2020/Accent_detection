@@ -1,5 +1,6 @@
-streamlit>=1.24.0
-torch>=2.0.0
-speechbrain>=0.5.14
-yt-dlp>=2024.4.9
-ffmpeg-python>=0.2.0
+streamlit
+torch==2.2.2
+torchaudio==2.2.2
+speechbrain==0.5.15
+yt-dlp
+ffmpeg-python
