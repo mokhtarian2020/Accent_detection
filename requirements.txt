@@ -3,4 +3,4 @@ torch
 torchaudio
 speechbrain
 yt-dlp
-sentencepiece==0.1.99  # ✅ stable version with prebuilt wheels
+sentencepiece==0.1.96  # ✅ stable version with prebuilt wheels
