@@ -1,6 +1,6 @@
 # 🎙️ English Accent Detection (Streamlit Demo)
 
-This is a Streamlit web application that identifies the **English accent** of a speaker from a **YouTube video link**.
+This is a Streamlit web application that identifies the **English accent** of a speaker from a ** video link**.
 
 It uses the [SpeechBrain](https://speechbrain.readthedocs.io) library and a pre-trained **ECAPA-TDNN model** fine-tuned on the [CommonAccent dataset](https://huggingface.co/Jzuluaga/accent-id-commonaccent_ecapa). The system classifies **16 English accents** and provides a confidence score.
 
