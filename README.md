@@ -8,7 +8,7 @@ It uses the [SpeechBrain](https://speechbrain.readthedocs.io) library and a pre-
 
 ## 🔍 Features
 
-- ✅ Paste any **YouTube link** with spoken English
+- ✅ Paste any **Video link** with spoken English
 - ✅ The app downloads and extracts the speech
 - ✅ Detects and classifies the **speaker's English accent**
 - ✅ Outputs:
