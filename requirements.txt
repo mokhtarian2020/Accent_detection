@@ -1,0 +1,6 @@
+streamlit
+yt-dlp
+torch
+torchaudio
+librosa
+speechbrain
